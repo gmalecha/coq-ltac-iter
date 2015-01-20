@@ -7,3 +7,9 @@
 *.cmx
 *.cmxs
 *.cmxa
+*.vo
+*.vi
+*.glob
+*.v.d
+Makefile.coq
+*~
