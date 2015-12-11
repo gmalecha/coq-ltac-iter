@@ -9,6 +9,6 @@ Hint Resolve pfTrue pfFalse : test_db.
 
 Goal True.
   let k l := generalize l in
-  foreach [ test_db ] run k.
+  first_of [ test_db ] run k.
 exact (fun x => x).
 Qed.

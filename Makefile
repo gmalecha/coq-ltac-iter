@@ -8,5 +8,5 @@ clean: Makefile.coq
 install: all
 	@ $(MAKE) -f Makefile.coq install
 
-Makefile.coq: arguments.txt Makefile
-	@ coq_makefile -f arguments.txt -o Makefile.coq
+Makefile.coq: _CoqProject Makefile
+	@ coq_makefile -f _CoqProject -o Makefile.coq

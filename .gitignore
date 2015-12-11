@@ -12,5 +12,6 @@
 *.glob
 *.v.d
 *.ml4.d
+*.aux
 Makefile.coq
 *~

@@ -1,1 +1,7 @@
--R src/ HintDbTactics
+-I src
+-Q theories HintDbTactics
+
+src/with_hint_db_plugin.ml4
+theories/HintDbTactics.v
+
+test-suite/example.v
