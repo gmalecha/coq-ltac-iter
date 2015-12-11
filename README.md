@@ -7,11 +7,16 @@ Create HintDb my_lemmas.
 Hint Resolve lem1 lem2 : my_lemmas.
 
 Ltac the_tactic :=
-  let k lem := idtac lem ; fail in
+  let k lem := idtac lem in
   foreach [ my_lemmas ] run k.
 (* OUTPUT:
 lem1
 lem2
 *)
 ```
-different "branches" are combined using Ltac's || operator.
+
+There are three versions
+
+- ```foreach [ .. ] run k``` combines the invocations of ```k``` using ```;```
+- ```first_of [ .. ] run k``` combines the invocations of ```k``` in the same was a ```first```
+- ```plus_of [ .. ] run k``` combines the invocations of ```k``` using ```+```
