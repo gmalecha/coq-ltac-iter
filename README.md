@@ -17,6 +17,6 @@ lem2
 
 There are three versions
 
-- ```foreach [ .. ] run k``` combines the invocations of ```k``` using ```;```
-- ```first_of [ .. ] run k``` combines the invocations of ```k``` in the same was a ```first```
-- ```plus_of [ .. ] run k``` combines the invocations of ```k``` using ```+```
+- ```foreach [ .. ] k``` combines the invocations of ```k``` using ```;```
+- ```first_of [ .. ] k``` combines the invocations of ```k``` in the same was a ```first```
+- ```plus_of [ .. ] k``` combines the invocations of ```k``` using ```+```
