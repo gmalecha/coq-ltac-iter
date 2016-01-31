@@ -1,6 +1,9 @@
 (*i camlp4use: "pa_extend.cmo" i*)
 (*i camlp4deps: "parsing/grammar.cma" i*)
 
+open Plugin_utils
+
+
 DECLARE PLUGIN "with_hint_db_plugin"
 
 module WITH_DB =
@@ -22,31 +25,12 @@ struct
     | Premise -> Pp.str "*|-"
     | Ctors typ -> Pp.(str "ctors:" ++ str "")
 
-  (** TODO: This should move. All of this was copied from coq-plugin-utils **)
-  let ltac_lcall tac args =
-    Tacexpr.TacArg(Loc.dummy_loc,
-                   Tacexpr.TacCall(Loc.dummy_loc,
-                                   Misctypes.ArgVar(Loc.dummy_loc,
-                                                    Names.id_of_string tac),
-                                   args))
-
-  let ltac_letin (x, e1) e2 =
-    Tacexpr.TacLetIn(false,[(Loc.dummy_loc,Names.id_of_string x),e1],e2)
-
-  let ltac_apply (f:Tacexpr.glob_tactic_expr)
-      (args:Tacexpr.glob_tactic_arg list) =
-    Tacinterp.eval_tactic
-      (ltac_letin ("F", Tacexpr.Tacexp f) (ltac_lcall "F" args))
-
-  let to_ltac_val c = Tacexpr.TacDynamic(Loc.dummy_loc,Pretyping.constr_in c)
-  (** End TODO **)
-
   let add_runner combiner else_tac tacK = function
     | Hints.Give_exact ((lem, _, _), _)
     | Hints.Res_pf ((lem, _, _), _)
     | Hints.ERes_pf ((lem, _, _), _) ->
       let this_tac =
-        ltac_apply tacK [to_ltac_val lem] in
+        Use_ltac.ltac_apply tacK [Use_ltac.to_ltac_val lem] in
       combiner this_tac else_tac
     | _ -> else_tac
 
@@ -80,7 +64,7 @@ struct
           end
       | Premise ->
         let call_on_id name =
-          ltac_apply tacK [to_ltac_val (Term.mkVar name)] in
+          Use_ltac.ltac_apply tacK [Use_ltac.to_ltac_val (Term.mkVar name)] in
         if reverse then
           Proofview.Goal.nf_enter begin fun gl ->
             Context.fold_named_context_reverse

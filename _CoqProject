@@ -1,6 +1,8 @@
 -I src
 -Q theories HintDbTactics
 
+-I $(COQLIB)/user-contrib/PluginUtils
+
 src/with_hint_db_plugin.ml4
 theories/HintDbTactics.v
 
