@@ -106,9 +106,10 @@ TYPED AS collection
 PRINTED BY pp_collection
   | [ "db:" preident(x) ] -> [ WITH_DB.HintDb x ]
   | [ "mod:" constr(m) ]  -> [ WITH_DB.Module m ]
-  | [ "*" "|-" ] -> [ WITH_DB.Premise ]
-  | [ "rev" "(" collection(e) ")" ] -> [ WITH_DB.Reverse e ]
+  | [ "*|-" ] -> [ WITH_DB.Premise ]
+  | [ "rev" collection(e) ] -> [ WITH_DB.Reverse e ]
   | [ "ctors:" constr(t) ] -> [ WITH_DB.Ctors t ]
+  | [ "(" collection(e) ")" ] -> [ e ]
 END;;
 
 TACTIC EXTEND first_of_hint_db

@@ -1,5 +1,6 @@
 Require Import HintDbTactics.HintDbTactics.
 
+(** * Iterating Hint Databases **)
 Create HintDb test_db.
 
 Axiom pfTrue : True.
@@ -9,11 +10,28 @@ Hint Resolve pfTrue pfFalse : test_db.
 
 Goal True.
   let k l := pose l in
-  foreach [ rev(db:test_db) ] k.
+  foreach [ rev db:test_db ] k.
   exact I.
 Defined.
 
 Goal True.
-  let k l := exact l in
-  first_of [ db:test_db db:core ] k.
+  let k l := pose l in
+  foreach [ db:core ] k.
+  exact I.
 Qed.
+
+(** * Iterating Premises **)
+
+Goal False -> True -> 1 = 1 -> True.
+  intros.
+  let k l := pose l in
+  foreach [ *|- ] k.
+  exact I.
+Defined.
+
+Goal False -> True -> 1 = 1 -> True.
+  intros.
+  let k l := pose l in
+  foreach [ rev *|- ] k.
+  exact I.
+Defined.
