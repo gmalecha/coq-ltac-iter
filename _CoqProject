@@ -1,9 +1,9 @@
 -I src
--Q theories HintDbTactics
+-Q theories LtacIter
 
 -I $(COQLIB)/user-contrib/PluginUtils
 
-src/with_hint_db_plugin.ml4
-theories/HintDbTactics.v
+src/ltac_iter_plugin.ml4
+theories/LtacIter.v
 
 test-suite/example.v

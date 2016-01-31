@@ -1,2 +1,2 @@
 Require Import PluginUtils.PluginUtils.
-Declare ML Module "with_hint_db_plugin".
+Declare ML Module "ltac_iter_plugin".

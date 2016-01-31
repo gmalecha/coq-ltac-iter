@@ -4,7 +4,7 @@
 open Plugin_utils
 
 
-DECLARE PLUGIN "with_hint_db_plugin"
+DECLARE PLUGIN "ltac_iter_plugin"
 
 module WITH_DB =
 struct

@@ -1,4 +1,4 @@
-Require Import HintDbTactics.HintDbTactics.
+Require Import LtacIter.LtacIter.
 
 (** * Iterating Hint Databases **)
 Create HintDb test_db.
