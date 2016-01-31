@@ -1,5 +1,5 @@
-coq-with-hint-db
-================
+coq-ltac-iter
+=============
 
 A Coq plugin that provides a tactic that iterates over various collections of terms. For example,
 
@@ -28,3 +28,13 @@ And there are several types of collections:
 - ```*|-``` iterates premises bottom-to-top by default
 - ```rev c``` reverses the iteration of ```c```
 - ```db:h``` iterates the hints inside the hint database ```h```
+
+Install from OPAM
+-----------------
+Make sure you added the [Coq repository](coq.io/opam/):
+
+    opam repo add coq-released https://coq.inria.fr/opam/released
+
+and run:
+
+    opam install coq-ltac-iter
