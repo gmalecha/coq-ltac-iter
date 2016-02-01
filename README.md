@@ -29,6 +29,12 @@ And there are several types of collections:
 - ```rev c``` reverses the iteration of ```c```
 - ```db:h``` iterates the hints inside the hint database ```h```
 
+Bugs & Feature Requests
+-----------------------
+Please submit bugs and feature requests to the [github issue tracker](https://github.com/gmalecha/coq-ltac-iter/issues).
+
+Pull requests are also welcome.
+
 Install from OPAM
 -----------------
 Make sure you added the [Coq repository](coq.io/opam/):
@@ -38,3 +44,11 @@ Make sure you added the [Coq repository](coq.io/opam/):
 and run:
 
     opam install coq-ltac-iter
+
+Install Manually
+----------------
+If you need to install the package manually then you will need to install the [PluginUtils](https://github.com/gmalecha/coq-plugin-utils) package first. After that, you can run:
+
+   make install
+
+to install this ltac-iter.
