@@ -10,7 +10,7 @@ Hint Resolve lem1 lem2 : my_lemmas.
 
 Ltac the_tactic :=
   let k lem := idtac lem in
-  foreach [ db:my_lemmas ] run k.
+  foreach [ db:my_lemmas ] k.
 (* OUTPUT:
 lem1
 lem2
@@ -20,7 +20,7 @@ lem2
 There are three versions of the iterator
 
 - ```foreach [ .. ] k``` combines the invocations of ```k``` using ```;```
-- ```first_of [ .. ] k``` combines the invocations of ```k``` in the same was a ```first```
+- ```first_of [ .. ] k``` combines the invocations of ```k``` in the same way a ```first```
 - ```plus_of [ .. ] k``` combines the invocations of ```k``` using ```+```
 
 And there are several types of collections:
