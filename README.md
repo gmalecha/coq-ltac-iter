@@ -49,6 +49,6 @@ Install Manually
 ----------------
 If you need to install the package manually then you will need to install the [PluginUtils](https://github.com/gmalecha/coq-plugin-utils) package first. After that, you can run:
 
-   make install
+    make install
 
 to install this ltac-iter.
