@@ -1,8 +1,6 @@
 -I src
 -Q theories LtacIter
 
--I $(COQLIB)/user-contrib/PluginUtils
-
 src/ltac_iter_plugin.ml4
 theories/LtacIter.v
 

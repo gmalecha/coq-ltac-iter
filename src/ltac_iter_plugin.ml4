@@ -1,18 +1,50 @@
-(*i camlp4use: "pa_extend.cmo" i*)
 (*i camlp4deps: "parsing/grammar.cma" i*)
+(*i camlp4use: "pa_extend.cmp" i*)
 
-open Plugin_utils
+
+open Ltac_plugin
+open Tacexpr
+open Tacinterp
+open Misctypes
+open Tacarg
 
 
 DECLARE PLUGIN "ltac_iter_plugin"
 
+
 module WITH_DB =
 struct
+
+  (* From MetaCoq: https://github.com/MetaCoq/metacoq
+   *)
+  module Use_ltac =
+  struct
+
+    let ltac_lcall tac args =
+      let (location, name) = Loc.tag (Names.Id.of_string tac) in
+      Tacexpr.TacArg(Loc.tag @@ Tacexpr.TacCall
+                                  (Loc.tag (Misctypes.ArgVar (CAst.make ?loc:location name),args)))
+
+    let ltac_apply (f : Value.t) (args: Tacinterp.Value.t list) =
+      let open Names in
+      let fold arg (i, vars, lfun) =
+        let id = Id.of_string ("x" ^ string_of_int i) in
+        let (l,n) = (Loc.tag id) in
+        let x = Reference (ArgVar (CAst.make ?loc:l n)) in
+        (succ i, x :: vars, Id.Map.add id arg lfun)
+      in
+      let (_, args, lfun) = List.fold_right fold args (0, [], Id.Map.empty) in
+      let lfun = Id.Map.add (Id.of_string "F") f lfun in
+      let ist = { (Tacinterp.default_ist ()) with Tacinterp.lfun = lfun; } in
+      Tacinterp.eval_tactic_ist ist (ltac_lcall "F" args)
+
+    let to_ltac_val c = Tacinterp.Value.of_constr c
+  end
 
   type collection =
     | Module of Constrexpr.constr_expr
     | HintDb of Hints.hint_db_name
-    | Search of Term.constr list
+    | Search of Constr.t list
     | Reverse of collection
     | Premise
     | Ctors of Constrexpr.constr_expr
@@ -64,23 +96,35 @@ struct
           end
       | Premise ->
         let call_on_id name =
-          Use_ltac.ltac_apply tacK [Use_ltac.to_ltac_val (Term.mkVar name)] in
+          Use_ltac.ltac_apply tacK [Use_ltac.to_ltac_val (EConstr.mkVar name)] in
         if reverse then
           Proofview.Goal.nf_enter begin fun gl ->
-            Context.fold_named_context_reverse
-              (fun acc (name,_,_) -> combiner (call_on_id name) acc)
+            let open Context.Named in
+            fold_inside
+              (fun acc d ->
+                match d with
+                | Declaration.LocalAssum (name, _) ->
+                   combiner (call_on_id name) acc
+                | Declaration.LocalDef (name, _, _) ->
+                   combiner (call_on_id name) acc)
               ~init:acc
               (Proofview.Goal.hyps gl)
           end
         else
           Proofview.Goal.nf_enter begin fun gl ->
-            Context.fold_named_context
-              (fun (name,_,_) acc -> combiner (call_on_id name) acc)
+            let open Context.Named in
+            fold_outside
+              (fun d acc ->
+                match d with
+                | Declaration.LocalAssum (name, _) ->
+                   combiner (call_on_id name) acc
+                | Declaration.LocalDef (name, _, _) ->
+                   combiner (call_on_id name) acc)
               ~init:acc
               (Proofview.Goal.hyps gl)
           end
       | c ->
-        Errors.anomaly ~label:"WithHintDb"
+        CErrors.user_err ~label:"WithHintDb"
           Pp.(   str "Not Implemented: "
               ++ pr_collection c)
     in resolve_collection
@@ -101,8 +145,11 @@ end
 
 let pp_collection _ _ _ = WITH_DB.pr_collection
 
+open Pcoq.Prim
+open Pcoq.Constr
+
+
 ARGUMENT EXTEND collection
-TYPED AS collection
 PRINTED BY pp_collection
   | [ "db:" preident(x) ] -> [ WITH_DB.HintDb x ]
   | [ "mod:" constr(m) ]  -> [ WITH_DB.Module m ]

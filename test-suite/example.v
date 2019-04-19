@@ -24,9 +24,8 @@ Qed.
 
 Goal False -> True -> 1 = 1 -> True.
   intros.
-  let k l := pose l in
-  foreach [ *|- ] k.
-  exact I.
+  let k l := (apply l) in
+  first_of [ *|- ] k.
 Defined.
 
 Goal False -> True -> 1 = 1 -> True.

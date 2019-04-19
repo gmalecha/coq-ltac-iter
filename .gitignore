@@ -14,4 +14,8 @@
 *.ml4.d
 *.aux
 Makefile.coq
+Makefile.coq.conf
 *~
+.merlin
+.envrc
+.coqdeps.d
