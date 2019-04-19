@@ -28,6 +28,12 @@ Goal False -> True -> 1 = 1 -> True.
   first_of [ *|- ] k.
 Defined.
 
+Goal True -> False -> 1 = 1 -> False.
+  intros.
+  let k l := (apply l) in
+  first_of [ *|- ] k.
+Defined.
+
 Goal False -> True -> 1 = 1 -> True.
   intros.
   let k l := pose l in

@@ -128,17 +128,20 @@ struct
               ++ pr_collection c)
     in resolve_collection
 
-  let the_tactic combiner dbs tacK =
+  let the_tactic (combiner, unit) dbs tacK =
     List.fold_right (fun db acc ->
         resolve_collection combiner tacK acc false db)
-       dbs (Proofview.tclUNIT ())
+       dbs unit
 
-  let first_combiner a b =
-    Proofview.tclORELSE a (fun _ -> b)
-  let seq_combiner a b =
-    Proofview.tclBIND a (fun _ -> b)
-  let plus_combiner a b =
-    Proofview.tclOR a (fun _ -> b)
+  let first_combiner =
+    ((fun a b -> Proofview.tclORELSE a (fun _ -> b)),
+     Tacticals.New.tclFAIL 0 Pp.(str "no applicable tactic"))
+  let seq_combiner =
+    ((fun a b -> Proofview.tclBIND a (fun _ -> b)),
+     Proofview.tclUNIT ())
+  let plus_combiner =
+    ((fun a b -> Proofview.tclOR a (fun _ -> b)),
+     Tacticals.New.tclFAIL 0 Pp.(str "no applicable tactic"))
 
 end
 
