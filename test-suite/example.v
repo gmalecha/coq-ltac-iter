@@ -9,7 +9,7 @@ Axiom pfFalse : True.
 Hint Resolve pfTrue pfFalse : test_db.
 
 Goal True.
-  let k l := pose l in
+  let k l := (idtac l) in
   foreach [ rev db:test_db ] k.
   exact I.
 Defined.

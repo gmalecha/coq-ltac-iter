@@ -1,1 +1,1 @@
-Declare ML Module "ltac_iter_plugin".
+Declare ML Module "ltac_iter".

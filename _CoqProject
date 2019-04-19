@@ -1,7 +1,8 @@
+-R theories LtacIter
 -I src
--Q theories LtacIter
 
-src/ltac_iter_plugin.ml4
+src/g_ltac_iter.ml4
+src/ltac_iter.mlpack
 theories/LtacIter.v
 
-test-suite/example.v
+# test-suite/example.v

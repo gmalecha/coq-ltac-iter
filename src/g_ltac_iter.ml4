@@ -8,7 +8,7 @@ open Tacinterp
 open Tacarg
 
 
-DECLARE PLUGIN "ltac_iter_plugin"
+DECLARE PLUGIN "ltac_iter"
 
 
 module WITH_DB =
