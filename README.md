@@ -47,7 +47,7 @@ and run:
 
 Install Manually
 ----------------
-If you need to install the package manually then you will need to install the [PluginUtils](https://github.com/gmalecha/coq-plugin-utils) package first. After that, you can run:
+You can run:
 
     make install
 
