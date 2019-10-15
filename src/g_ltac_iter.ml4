@@ -70,10 +70,14 @@ struct
       | Reverse c -> resolve_collection (not reverse) c
       | HintDb db_name ->
         let db =
-          let syms = ref [] in
-          let db = Hints.searchtable_map db_name in
-          Hints.Hint_db.iter (fun _ _ hl -> syms := hl :: !syms) db ;
-          !syms
+          try
+            let db = Hints.searchtable_map db_name in
+            let syms = ref [] in
+            Hints.Hint_db.iter (fun _ _ hl -> syms := hl :: !syms) db ;
+            !syms
+          with Not_found ->
+            let _ = Tacticals.tclIDTAC_MESSAGE Pp.(str "Hint database " ++ str db_name ++ str " not found!") in
+            []
         in
         if reverse then
           Proofview.Goal.nf_enter begin fun gl ->
