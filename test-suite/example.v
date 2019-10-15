@@ -40,3 +40,8 @@ Goal False -> True -> 1 = 1 -> True.
   foreach [ rev *|- ] k.
   exact I.
 Defined.
+
+Goal True.
+  foreach [ db:does_not_exist ] ltac:(fun x => idtac x).
+  exact I.
+Defined.
