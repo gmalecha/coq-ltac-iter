@@ -80,7 +80,8 @@ struct
             Hints.Hint_db.iter (fun _ _ hl -> syms := hl :: !syms) db ;
             !syms
           with Not_found ->
-            (* let _ = Tacticals.tclIDTAC_MESSAGE Pp.(str "Hint database " ++ str db_name ++ str " not found!") in *)
+            Feedback.msg_warning
+              Pp.(str "Hint database " ++ str db_name ++ str " not found!") ;
             []
         in
         if reverse then
