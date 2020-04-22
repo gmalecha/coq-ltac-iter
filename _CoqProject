@@ -1,7 +1,7 @@
 -R theories LtacIter
 -I src
 
-src/g_ltac_iter.ml4
+src/g_ltac_iter.mlg
 src/ltac_iter.mlpack
 theories/LtacIter.v
 

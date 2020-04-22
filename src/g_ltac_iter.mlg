@@ -1,15 +1,18 @@
 (*i camlp4deps: "parsing/grammar.cma" i*)
 (*i camlp4use: "pa_extend.cmp" i*)
 
+{
 
 open Ltac_plugin
 open Tacexpr
 open Tacinterp
 open Tacarg
 
+}
 
 DECLARE PLUGIN "ltac_iter"
 
+{
 
 module WITH_DB =
 struct
@@ -20,9 +23,10 @@ struct
   struct
 
     let ltac_lcall tac args =
-      let (location, name) = Loc.tag (Names.Id.of_string tac) in
-      Tacexpr.TacArg(Loc.tag @@ Tacexpr.TacCall
-                                  (Loc.tag (Locus.ArgVar (CAst.make ?loc:location name),args)))
+      let (location, name) = Loc.tag (Names.Id.of_string tac)
+      (* Loc.tag @@ Names.Id.of_string tac *) in
+      Tacexpr.TacArg(CAst.make ?loc:location (Tacexpr.TacCall
+        (CAst.make (Locus.ArgVar (CAst.make ?loc:location name),args))))
 
     let ltac_apply (f : Value.t) (args: Tacinterp.Value.t list) =
       let open Names in
@@ -76,11 +80,12 @@ struct
             Hints.Hint_db.iter (fun _ _ hl -> syms := hl :: !syms) db ;
             !syms
           with Not_found ->
-            let _ = Tacticals.tclIDTAC_MESSAGE Pp.(str "Hint database " ++ str db_name ++ str " not found!") in
+            Feedback.msg_warning
+              Pp.(str "Hint database " ++ str db_name ++ str " not found!") ;
             []
         in
         if reverse then
-          Proofview.Goal.nf_enter begin fun gl ->
+          Proofview.Goal.enter begin fun gl ->
             List.fold_left (fun acc hints ->
                 List.fold_left (fun acc hint ->
                     Hints.run_hint hint.Hints.code
@@ -89,7 +94,7 @@ struct
               acc db
           end
         else
-          Proofview.Goal.nf_enter begin fun gl ->
+          Proofview.Goal.enter begin fun gl ->
             List.fold_right (fun hints acc ->
                 List.fold_right (fun hint acc ->
                     Hints.run_hint hint.Hints.code
@@ -101,28 +106,28 @@ struct
         let call_on_id name =
           Use_ltac.ltac_apply tacK [Use_ltac.to_ltac_val (EConstr.mkVar name)] in
         if reverse then
-          Proofview.Goal.nf_enter begin fun gl ->
+          Proofview.Goal.enter begin fun gl ->
             let open Context.Named in
             fold_inside
               (fun acc d ->
                 match d with
                 | Declaration.LocalAssum (name, _) ->
-                   combiner (call_on_id name) acc
+                   combiner (call_on_id (Context.binder_name name)) acc
                 | Declaration.LocalDef (name, _, _) ->
-                   combiner (call_on_id name) acc)
+                   combiner (call_on_id (Context.binder_name name)) acc)
               ~init:acc
               (Proofview.Goal.hyps gl)
           end
         else
-          Proofview.Goal.nf_enter begin fun gl ->
+          Proofview.Goal.enter begin fun gl ->
             let open Context.Named in
             fold_outside
               (fun d acc ->
                 match d with
                 | Declaration.LocalAssum (name, _) ->
-                   combiner (call_on_id name) acc
+                   combiner (call_on_id (Context.binder_name name)) acc
                 | Declaration.LocalDef (name, _, _) ->
-                   combiner (call_on_id name) acc)
+                   combiner (call_on_id (Context.binder_name name)) acc)
               ~init:acc
               (Proofview.Goal.hyps gl)
           end
@@ -154,28 +159,29 @@ let pp_collection _ _ _ = WITH_DB.pr_collection
 open Pcoq.Prim
 open Pcoq.Constr
 
+}
 
 ARGUMENT EXTEND collection
-PRINTED BY pp_collection
-  | [ "db:" preident(x) ] -> [ WITH_DB.HintDb x ]
-  | [ "mod:" constr(m) ]  -> [ WITH_DB.Module m ]
-  | [ "*|-" ] -> [ WITH_DB.Premise ]
-  | [ "rev" collection(e) ] -> [ WITH_DB.Reverse e ]
-  | [ "ctors:" constr(t) ] -> [ WITH_DB.Ctors t ]
-  | [ "(" collection(e) ")" ] -> [ e ]
-END;;
+PRINTED BY { pp_collection }
+  | [ "db:" preident(x) ] -> { WITH_DB.HintDb x }
+  | [ "mod:" constr(m) ]  -> { WITH_DB.Module m }
+  | [ "*|-" ] -> { WITH_DB.Premise }
+  | [ "rev" collection(e) ] -> { WITH_DB.Reverse e }
+  | [ "ctors:" constr(t) ] -> { WITH_DB.Ctors t }
+  | [ "(" collection(e) ")" ] -> { e }
+END
 
 TACTIC EXTEND first_of_hint_db
   | [ "first_of" "[" ne_collection_list(l) "]" tactic(k) ]  ->
-    [ WITH_DB.the_tactic WITH_DB.first_combiner l k ]
-END;;
+    { WITH_DB.the_tactic WITH_DB.first_combiner l k }
+END
 
 TACTIC EXTEND all_of_hint_db
   | [ "foreach" "[" ne_collection_list(l) "]" tactic(k) ]  ->
-    [ WITH_DB.the_tactic WITH_DB.seq_combiner l k ]
-END;;
+    { WITH_DB.the_tactic WITH_DB.seq_combiner l k }
+END
 
 TACTIC EXTEND plus_of_hint_db
   | [ "plus_of" "[" ne_collection_list(l) "]" tactic(k) ]  ->
-    [ WITH_DB.the_tactic WITH_DB.plus_combiner l k ]
-END;;
+    { WITH_DB.the_tactic WITH_DB.plus_combiner l k }
+END
